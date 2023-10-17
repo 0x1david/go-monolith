@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/0x1david/monolith-app/pkg/config"
+	"github.com/0x1david/monolith-app/pkg/models"
 )
 
 var app *config.AppConfig
@@ -16,7 +17,12 @@ func NewTemplates(a *config.AppConfig) {
     app = a
 }
 
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+func AddDefaultData(templateData *models.TemplateData) *models.TemplateData{
+
+    return templateData
+}
+
+func RenderTemplate(w http.ResponseWriter, tmpl string, templateData *models.TemplateData) {
     var templateCache map[string]*template.Template
     var err error
 
@@ -35,8 +41,10 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
     }
 
     buf := new(bytes.Buffer)
+    
+    templateData = AddDefaultData(templateData)
 
-    err = template.Execute(buf, nil)
+    err = template.Execute(buf, templateData)
     if err != nil {
         log.Println(err)
     }
